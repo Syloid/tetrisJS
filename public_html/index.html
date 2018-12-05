@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body id="all">
+        <img src="img/black.png" id="negre" style="display: none;">
+        <!--<canvas id="espai" width="550" height="550"> </canvas>-->
+    </body>
+    <script>
+
+        var Joc = {
+            espai: 0,
+            estat: 0,
+            puntuacio: 0,
+            puntuacioMax: 0,
+            pecaVigent: 0,
+            seguentPeca: 0,
+            nombreDeVegades: new Array(),
+            interval: 0,
+            nivell: 0,
+            inicialitzarJoc: function ()
+            {
+                this.espai = [
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                ];
+                this.nombreDeVegades["i"] = 0;
+                this.nombreDeVegades["j"] = 0;
+                this.nombreDeVegades["l"] = 0;
+                this.nombreDeVegades["o"] = 0;
+                this.nombreDeVegades["s"] = 0;
+                this.nombreDeVegades["t"] = 0;
+                this.nombreDeVegades["z"] = 0;
+                this.nivell = 1;
+            },
+            calcularSeguentPeca: function () {
+                //random todo   
+            },
+            teclatUsuari: function () {
+                //todo input 
+            },
+            intervalJoc: function () {
+                //todo setinterval
+            },
+            pinta: function () {
+                document.write("Nivell: "+this.nivell+"<br>");
+                document.write("Puntuació Màxima: "+this.puntuacioMax);
+                document.write("<br>Puntuació Actual: "+this.puntuacio+"<br><br>");
+                
+                
+                for (var i = 0; i < this.espai.length; i++) {
+                    for (var j = 0; j < this.espai[i].length; j++) {
+                        document.write(this.espai[i][j]);
+                    }
+                    document.write("<br>");
+                }
+            }
+
+        };
+
+        Joc.inicialitzarJoc();
+        Joc.pinta();
+
+    </script>
+</html>
