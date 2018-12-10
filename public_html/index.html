@@ -67,18 +67,25 @@ and open the template in the editor.
             calcularSeguentPeca: function () {
                 //random todo   
             },
-            teclatUsuari: function () {
+            teclatUsuari: function (e) {
                 //todo input 
+                if (e.keyCode === 40) {//amunt
+                    console.log("abaix");
+                } else if (e.keyCode === 38) {//abaix
+                    console.log("amunt");
+                } else if (e.keyCode === 37) {//esquerra
+                } else if (e.keyCode === 39) {//dreta
+                }
             },
             intervalJoc: function () {
                 //todo setinterval
             },
             pinta: function () {
-                document.write("Nivell: "+this.nivell+"<br>");
-                document.write("Puntuació Màxima: "+this.puntuacioMax);
-                document.write("<br>Puntuació Actual: "+this.puntuacio+"<br><br>");
-                
-                
+                document.write("Nivell: " + this.nivell + "<br>");
+                document.write("Puntuació Màxima: " + this.puntuacioMax);
+                document.write("<br>Puntuació Actual: " + this.puntuacio + "<br><br>");
+
+
                 for (var i = 0; i < this.espai.length; i++) {
                     for (var j = 0; j < this.espai[i].length; j++) {
                         document.write(this.espai[i][j]);
@@ -86,11 +93,103 @@ and open the template in the editor.
                     document.write("<br>");
                 }
             }
-
         };
+
+        var Peça = function (forma, color, x, y) {
+            this.forma = forma;
+            this.color = color;
+            this.x = x;
+            this.y = y;
+        };
+        function GeneraPecaAleatoria() {
+            var peces = [
+                [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "groc"],
+                [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], "lila"],
+                [[[0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 0, 0]], "verd"],
+                [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]], "roig"],
+                [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "blau"],
+                [[[0, 1, 1, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "taronga"],
+                [[[0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "morat"]];
+            var numeroAleatori = Math.round(Math.random() * 6);
+            return peces[numeroAleatori];
+        }
+
+        Peça.prototype.moureD = function () {
+            if ((x - 1) > 0) {
+                x--;
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        Peça.prototype.moureEsquerra = function () {
+            if ((x + 1) < 14) {
+                x++;
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        Peça.prototype.moureAbaix = function () {
+            if (y - 1 > 0) {
+                y--;
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        Peça.prototype.rotarDreta = function () {
+            var formaNova = new Array();
+            for (var i = 0; i < this.forma.length; i++) {
+                formaNova[i] = new Array();
+                for (var j = 0; j < this.forma[i].length; j++) {
+                    formaNova[i][j] = this.forma[this.forma[i].length - 1 - j][i];
+                }
+            }
+            this.forma = formaNova;
+        };
+        Peça.prototype.rotarEsquerra = function () {
+            this.rotarDreta();
+            this.rotarDreta();
+            this.rotarDreta();
+        };
+        Peça.prototype.pintar = function ()
+        {
+            var resultat = "<table border='1'>";
+            for (var i = 0; i < this.forma.length; i++)
+            {
+                resultat = resultat + "<tr>";
+                for (var j = 0; j < this.forma[i].length; j++)
+                {
+                    resultat = resultat + "<td>";
+                    if (this.forma[i][j] === 1) {
+                        resultat = resultat + "X";
+                    } else {
+                        resultat = resultat + "-";
+                    }
+                    resultat = resultat + "</td>";
+                }
+                resultat = resultat + "</tr>";
+            }
+            resultat = resultat + "</table>";
+            return resultat;
+        };
+        Peça.prototype.getForma = function () {
+            return this.forma;
+        };
+
 
         Joc.inicialitzarJoc();
         Joc.pinta();
+        var pa = GeneraPecaAleatoria();
+        var p = new Peça(pa[0], pa[1]);
+        document.write(p.pintar());
 
+        p.rotarEsquerra();
+        document.write(p.pintar());
+        
     </script>
 </html>
