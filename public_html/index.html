@@ -13,21 +13,110 @@ and open the template in the editor.
     <body id="all">
         <img src="img/black.png" id="negre" style="display: none;">
         <!--<canvas id="espai" width="550" height="550"> </canvas>-->
+        <div id="joc"></div>
     </body>
     <script>
+        var Pieza = function (formaYColor, x, y) {
+            console.log(formaYColor);
+            this.forma = formaYColor[0];
+            this.color = formaYColor[1];
+            this.x = x;
+            this.y = y;
+        };
+        function refrescarHTML() { //funcio per refrescar la pagina
+            document.body.innerHTML = '';
+        }
 
+        function GeneraPecaAleatoria() {
+            var peces = [
+                [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "groc"],
+                [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], "lila"],
+                [[[0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 0, 0]], "verd"],
+                [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]], "roig"],
+                [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "blau"],
+                [[[0, 1, 1, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "taronga"],
+                [[[0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "morat"]];
+            var numeroAleatori = Math.round(Math.random() * 6);
+            return peces[numeroAleatori];
+        }
+
+        Pieza.prototype.moureDreta = function () {
+            if ((x - 1) > 0) {
+                x--;
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        Pieza.prototype.moureEsquerra = function () {
+            if ((x + 1) < 14) {
+                x++;
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        Pieza.prototype.moureAbaix = function () {
+            if (y - 1 > 0) {
+                y--;
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        Pieza.prototype.rotarDreta = function () {
+            var formaNova = new Array();
+            for (var i = 0; i < this.forma.length; i++) {
+                formaNova[i] = new Array();
+                for (var j = 0; j < this.forma[i].length; j++) {
+                    formaNova[i][j] = this.forma[this.forma[i].length - 1 - j][i];
+                }
+            }
+            this.forma = formaNova;
+        };
+        Pieza.prototype.rotarEsquerra = function () {
+            this.rotarDreta();
+            this.rotarDreta();
+            this.rotarDreta();
+        };
+        Pieza.prototype.pintar = function ()
+        {
+            var resultat = "<table border='1'>";
+            for (var i = 0; i < this.forma.length; i++)
+            {
+                resultat = resultat + "<tr>";
+                for (var j = 0; j < this.forma[i].length; j++)
+                {
+                    resultat = resultat + "<td>";
+                    if (this.forma[i][j] === 1) {
+                        resultat = resultat + "1";
+                    } else {
+                        resultat = resultat + "-";
+                    }
+                    resultat = resultat + "</td>";
+                }
+                resultat = resultat + "</tr>";
+            }
+            resultat = resultat + "</table>";
+            return resultat;
+        };
+        Pieza.prototype.getForma = function () {
+            return this.forma;
+        };
         var Joc = {
             espai: 0,
             estat: 0,
             puntuacio: 0,
             puntuacioMax: 0,
-            pecaVigent: 0,
-            seguentPeca: 0,
+            pecaVigent: new Pieza(GeneraPecaAleatoria(), 3, 0),
+            seguentPeca: new Pieza(GeneraPecaAleatoria(), 3, 0),
             nombreDeVegades: new Array(),
             interval: 0,
             nivell: 0,
-            inicialitzarJoc: function ()
-            {
+            inicialitzarJoc: function () {
                 this.espai = [
                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -63,9 +152,18 @@ and open the template in the editor.
                 this.nombreDeVegades["t"] = 0;
                 this.nombreDeVegades["z"] = 0;
                 this.nivell = 1;
+
+                var este = this;
+
+                setInterval(function () {
+                    este.movimiento();
+                }, 100);
+
             },
-            calcularSeguentPeca: function () {
-                //random todo   
+            mostrarSeguentPeca: function () {
+
+                //document.write(seguentPeca.pintar());
+
             },
             teclatUsuari: function (e) {
                 //todo input 
@@ -78,118 +176,130 @@ and open the template in the editor.
                 }
             },
             intervalJoc: function () {
-                //todo setinterval
+            },
+            haChocat: function () {
+                for (var i = 0; i < this.espai.length; i++) {
+                    for (var j = 0; j < this.espai[i].length; j++) {
+                        if (this.espai[i][j] === "P") {
+                            try {
+                                if (this.espai[i + 1][j] === 1) {
+                                    return true;
+                                }
+                            } catch (e) {
+                                console.log(e);
+                            }
+                            try {
+                                if (this.espai[i - 1][j] === 1) {
+                                    return true;
+                                }
+                            } catch (e) {
+                                console.log(e);
+                            }
+                            try {
+                                if (this.espai[i][j + 1] === 1) {
+                                    return true;
+                                }
+                            } catch (e) {
+                                console.log(e);
+                            }
+                            try {
+                                if (this.espai[i][j - 1] === 1) {
+                                    return true;
+                                }
+                            } catch (e) {
+                                console.log(e);
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            },
+            parar: function () {
+                if (this.pecaVigent.color === "lila" || this.pecaVigent.color === "taronga" || this.pecaVigent.color === "blau") { //si es el palo 
+                    if (this.pecaVigent.y < 22) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    if (this.pecaVigent.y < 23) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            },
+            canviarPieza: function () {
+                this.pecaVigent = this.seguentPeca;
+                this.pecaVigent.x = 3;
+                this.pecaVigent.y = 0;
+                this.seguentPeca = new Pieza(GeneraPecaAleatoria(), 3, 0);
+
+                this.vaciarEspacio(1);
+
+
+            },
+            movimiento: function () {
+
+
+                this.vaciarEspacio(0);
+                this.colocarPiezaATauler();
+                if (this.parar() === false || this.haChocat() === false) {
+                    this.pecaVigent.y++;
+                } else {
+                    alert("prueba");
+                }
+                this.pinta();
+
+            },
+            vaciarEspacio: function (parametro) {
+                for (var i = 0; i < this.espai.length; i++) {
+                    for (var j = 0; j < this.espai[i].length; j++) {
+                        if (this.espai[i][j] === "P") {
+                            this.espai[i][j] = parametro;
+                        }
+                    }
+                }
             },
             pinta: function () {
-                document.write("Nivell: " + this.nivell + "<br>");
-                document.write("Puntuació Màxima: " + this.puntuacioMax);
-                document.write("<br>Puntuació Actual: " + this.puntuacio + "<br><br>");
+                document.getElementById('joc').innerHTML = "";
+                var print;
+
+                print = "Nivell: " + this.nivell + "<br>";
+                print += ("Puntuació Màxima: " + this.puntuacioMax);
+                print += ("<br>Puntuació Actual: " + this.puntuacio + "<br><br>Peça següent");
+                print += (this.seguentPeca.pintar() + "<br>");
+
 
 
                 for (var i = 0; i < this.espai.length; i++) {
                     for (var j = 0; j < this.espai[i].length; j++) {
-                        document.write(this.espai[i][j]);
+                        print += (this.espai[i][j]);
                     }
-                    document.write("<br>");
+                    print += ("<br>");
                 }
-            }
-        };
 
-        var Peça = function (forma, color, x, y) {
-            this.forma = forma;
-            this.color = color;
-            this.x = x;
-            this.y = y;
-        };
-        function GeneraPecaAleatoria() {
-            var peces = [
-                [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "groc"],
-                [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], "lila"],
-                [[[0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 0, 0]], "verd"],
-                [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]], "roig"],
-                [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "blau"],
-                [[[0, 1, 1, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "taronga"],
-                [[[0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "morat"]];
-            var numeroAleatori = Math.round(Math.random() * 6);
-            return peces[numeroAleatori];
-        }
+                document.getElementById('joc').innerHTML = print;
 
-        Peça.prototype.moureD = function () {
-            if ((x - 1) > 0) {
-                x--;
-                return true;
-            } else {
-                return false;
-            }
-        };
-
-        Peça.prototype.moureEsquerra = function () {
-            if ((x + 1) < 14) {
-                x++;
-                return true;
-            } else {
-                return false;
-            }
-        };
-
-        Peça.prototype.moureAbaix = function () {
-            if (y - 1 > 0) {
-                y--;
-                return true;
-            } else {
-                return false;
-            }
-        };
-
-        Peça.prototype.rotarDreta = function () {
-            var formaNova = new Array();
-            for (var i = 0; i < this.forma.length; i++) {
-                formaNova[i] = new Array();
-                for (var j = 0; j < this.forma[i].length; j++) {
-                    formaNova[i][j] = this.forma[this.forma[i].length - 1 - j][i];
-                }
-            }
-            this.forma = formaNova;
-        };
-        Peça.prototype.rotarEsquerra = function () {
-            this.rotarDreta();
-            this.rotarDreta();
-            this.rotarDreta();
-        };
-        Peça.prototype.pintar = function ()
-        {
-            var resultat = "<table border='1'>";
-            for (var i = 0; i < this.forma.length; i++)
-            {
-                resultat = resultat + "<tr>";
-                for (var j = 0; j < this.forma[i].length; j++)
-                {
-                    resultat = resultat + "<td>";
-                    if (this.forma[i][j] === 1) {
-                        resultat = resultat + "X";
-                    } else {
-                        resultat = resultat + "-";
+            },
+            colocarPiezaATauler: function () {
+                var top = 0;
+                var trobat = false;
+                for (var i = 0; i < this.pecaVigent.forma.length; i++) {
+                    for (var j = 0; j < this.pecaVigent.forma[i].length; j++) {
+                        if (this.pecaVigent.forma[i][j] === 1) {
+                            this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] = "P";
+                            trobat = true;
+                        }
                     }
-                    resultat = resultat + "</td>";
+                    if (trobat === true) {
+                        top++;
+                    }
                 }
-                resultat = resultat + "</tr>";
             }
-            resultat = resultat + "</table>";
-            return resultat;
         };
-        Peça.prototype.getForma = function () {
-            return this.forma;
-        };
-
 
         Joc.inicialitzarJoc();
-        Joc.pinta();
-        var pa = GeneraPecaAleatoria();
-        var p = new Peça(pa[0], pa[1]);
-        document.write(p.pintar());
-
-        p.rotarEsquerra();
-        document.write(p.pintar());
-        
     </script>
 </html>
