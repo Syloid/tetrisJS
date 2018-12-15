@@ -9,7 +9,27 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     </head>
+    <style>
+        .seguent{
+            width: 100px !important;
+            height: 100px !important;
+        }
+        table {
+            border-radius: 5px;
+            text-align: center;
+            width: 375px;
+            height: 625px;
+            background-color:#111111; 
+        }
+        .pieza {
+            background-color: #ba4c55;
+        }
+        .pared {
+            background-color: #707070;
+        }
+    </style>
     <body id="all">
         <img src="img/black.png" id="negre" style="display: none;">
         <!--<canvas id="espai" width="550" height="550"> </canvas>-->
@@ -23,10 +43,6 @@ and open the template in the editor.
             this.x = x;
             this.y = y;
         };
-        function refrescarHTML() { //funcio per refrescar la pagina
-            document.body.innerHTML = '';
-        }
-
         function GeneraPecaAleatoria() {
             var peces = [
                 [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "groc"],
@@ -84,19 +100,23 @@ and open the template in the editor.
         };
         Pieza.prototype.pintar = function ()
         {
-            var resultat = "<table border='1'>";
+            var resultat = "<table class=seguent>";
             for (var i = 0; i < this.forma.length; i++)
             {
                 resultat = resultat + "<tr>";
                 for (var j = 0; j < this.forma[i].length; j++)
                 {
-                    resultat = resultat + "<td>";
+                    
                     if (this.forma[i][j] === 1) {
+                        resultat = resultat + "<td class=pieza>";
                         resultat = resultat + "1";
+                        resultat = resultat + "</td>";
                     } else {
+                        resultat = resultat + "<td>";
                         resultat = resultat + "-";
+                        resultat = resultat + "</td>";
                     }
-                    resultat = resultat + "</td>";
+                    
                 }
                 resultat = resultat + "</tr>";
             }
@@ -153,11 +173,12 @@ and open the template in the editor.
                 this.nombreDeVegades["z"] = 0;
                 this.nivell = 1;
 
-                var este = this;
 
-                setInterval(function () {
-                    este.movimiento();
-                }, 100);
+                var este = this;
+                 
+                 setInterval(function () {
+                 este.movimiento();
+                 }, 100);
 
             },
             mostrarSeguentPeca: function () {
@@ -178,6 +199,7 @@ and open the template in the editor.
             intervalJoc: function () {
             },
             haChocat: function () {
+                //todo
                 for (var i = 0; i < this.espai.length; i++) {
                     for (var j = 0; j < this.espai[i].length; j++) {
                         if (this.espai[i][j] === "P") {
@@ -216,8 +238,8 @@ and open the template in the editor.
                 return false;
             },
             parar: function () {
-                if (this.pecaVigent.color === "lila" || this.pecaVigent.color === "taronga" || this.pecaVigent.color === "blau") { //si es el palo 
-                    if (this.pecaVigent.y < 22) {
+                if (this.pecaVigent.color === "lila" ) { //si es el palo 
+                    if (this.pecaVigent.y < 21) {
                         return false;
                     } else {
                         return true;
@@ -229,8 +251,22 @@ and open the template in the editor.
                         return true;
                     }
                 }
+            }, seguentEsParet: function () {
+                var bool = false;
+                for (var i = 0; i < this.espai.length; i++) {
+                    for (var j = 0; j < this.espai[i].length; j++) {
+                        if (this.espai[i][j] === "P") {
+                            if (i + 1 <= 24) {
+                                if (this.espai[i + 1][j] === 1) {
+                                    bool = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                return bool;
             },
-            canviarPieza: function () {
+            cambiarPieza: function () {
                 this.pecaVigent = this.seguentPeca;
                 this.pecaVigent.x = 3;
                 this.pecaVigent.y = 0;
@@ -245,10 +281,10 @@ and open the template in the editor.
 
                 this.vaciarEspacio(0);
                 this.colocarPiezaATauler();
-                if (this.parar() === false || this.haChocat() === false) {
+                if (this.parar() === false && this.seguentEsParet() === false) {
                     this.pecaVigent.y++;
                 } else {
-                    alert("prueba");
+                    this.cambiarPieza();
                 }
                 this.pinta();
 
@@ -272,13 +308,21 @@ and open the template in the editor.
                 print += (this.seguentPeca.pintar() + "<br>");
 
 
-
+                print += "<table>";
                 for (var i = 0; i < this.espai.length; i++) {
+                    print += "<tr>";
                     for (var j = 0; j < this.espai[i].length; j++) {
-                        print += (this.espai[i][j]);
+                        if (this.espai[i][j] === "P") {
+                            print += "<td class='pieza'>" +"</td>";
+                        }else if(this.espai[i][j] === 1) {
+                            print += "<td class='pared'>" + "</td>";
+                        }else{
+                            print+= "<td>"  + "</td>";
+                        }
                     }
-                    print += ("<br>");
+                    print += ("</tr>");
                 }
+                print += "</table>";
 
                 document.getElementById('joc').innerHTML = print;
 
@@ -299,7 +343,6 @@ and open the template in the editor.
                 }
             }
         };
-
         Joc.inicialitzarJoc();
     </script>
 </html>
