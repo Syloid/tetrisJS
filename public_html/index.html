@@ -33,7 +33,9 @@ and open the template in the editor.
     <body id="all">
         <img src="img/black.png" id="negre" style="display: none;">
         <!--<canvas id="espai" width="550" height="550"> </canvas>-->
-        <div id="joc"></div>
+        <div id="joc">
+
+        </div>
     </body>
     <script>
         var Pieza = function (formaYColor, x, y) {
@@ -106,7 +108,7 @@ and open the template in the editor.
                 resultat = resultat + "<tr>";
                 for (var j = 0; j < this.forma[i].length; j++)
                 {
-                    
+
                     if (this.forma[i][j] === 1) {
                         resultat = resultat + "<td class=pieza>";
                         resultat = resultat + "1";
@@ -116,7 +118,7 @@ and open the template in the editor.
                         resultat = resultat + "-";
                         resultat = resultat + "</td>";
                     }
-                    
+
                 }
                 resultat = resultat + "</tr>";
             }
@@ -136,6 +138,7 @@ and open the template in the editor.
             nombreDeVegades: new Array(),
             interval: 0,
             nivell: 0,
+            teclat: document.getElementById("all"),
             inicialitzarJoc: function () {
                 this.espai = [
                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -173,26 +176,26 @@ and open the template in the editor.
                 this.nombreDeVegades["z"] = 0;
                 this.nivell = 1;
 
+                this.teclat = this.teclat.addEventListener("keydown", this.teclatUsuari);
+
+
 
                 var este = this;
-                 
-                 setInterval(function () {
-                 este.movimiento();
-                 }, 100);
+
+                setInterval(function () {
+                    este.movimiento();
+                }, 100);
 
             },
-            mostrarSeguentPeca: function () {
 
-                //document.write(seguentPeca.pintar());
-
-            },
             teclatUsuari: function (e) {
                 //todo input 
-                if (e.keyCode === 40) {//amunt
-                    console.log("abaix");
-                } else if (e.keyCode === 38) {//abaix
-                    console.log("amunt");
+                if (e.keyCode === 40) {//abajo
+                    this.pecaVigent.moureAbaix();
+                } else if (e.keyCode === 38) {//arriba
+
                 } else if (e.keyCode === 37) {//esquerra
+                    console.log(this.pecaVigent.x);
                 } else if (e.keyCode === 39) {//dreta
                 }
             },
@@ -238,8 +241,15 @@ and open the template in the editor.
                 return false;
             },
             parar: function () {
-                if (this.pecaVigent.color === "lila" ) { //si es el palo 
+                if (this.pecaVigent.color === "lila") { //si es el palo 
                     if (this.pecaVigent.y < 21) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else if (this.pecaVigent.color === "taronga" || this.pecaVigent.color === "blau") {
+                    console.log("a")
+                    if (this.pecaVigent.y < 22) {
                         return false;
                     } else {
                         return true;
@@ -313,11 +323,11 @@ and open the template in the editor.
                     print += "<tr>";
                     for (var j = 0; j < this.espai[i].length; j++) {
                         if (this.espai[i][j] === "P") {
-                            print += "<td class='pieza'>" +"</td>";
-                        }else if(this.espai[i][j] === 1) {
+                            print += "<td class='pieza'>" + "</td>";
+                        } else if (this.espai[i][j] === 1) {
                             print += "<td class='pared'>" + "</td>";
-                        }else{
-                            print+= "<td>"  + "</td>";
+                        } else {
+                            print += "<td>" + "</td>";
                         }
                     }
                     print += ("</tr>");
