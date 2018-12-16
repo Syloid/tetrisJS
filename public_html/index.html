@@ -5,354 +5,362 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    </head>
-    <style>
-        .seguent{
-            width: 100px !important;
-            height: 100px !important;
-        }
-        table {
-            border-radius: 5px;
-            text-align: center;
-            width: 375px;
-            height: 625px;
-            background-color:#111111; 
-        }
-        .pieza {
-            background-color: #ba4c55;
-        }
-        .pared {
-            background-color: #707070;
-        }
-    </style>
-    <body id="all">
-        <img src="img/black.png" id="negre" style="display: none;">
-        <!--<canvas id="espai" width="550" height="550"> </canvas>-->
-        <div id="joc">
 
-        </div>
-    </body>
-    <script>
-        var Pieza = function (formaYColor, x, y) {
-            console.log(formaYColor);
-            this.forma = formaYColor[0];
-            this.color = formaYColor[1];
-            this.x = x;
-            this.y = y;
-        };
-        function GeneraPecaAleatoria() {
-            var peces = [
-                [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "groc"],
-                [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], "lila"],
-                [[[0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 0, 0]], "verd"],
-                [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]], "roig"],
-                [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "blau"],
-                [[[0, 1, 1, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "taronga"],
-                [[[0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "morat"]];
-            var numeroAleatori = Math.round(Math.random() * 6);
-            return peces[numeroAleatori];
-        }
+<head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+</head>
 
-        Pieza.prototype.moureDreta = function () {
-            if ((x - 1) > 0) {
-                x--;
-                return true;
+<body id="all">
+    <!--Imagenes-->
+    <img src="img/empty.png" id="empty" style="display: none;">
+    <img src="img/paret.png" id="paret" style="display: none;">
+    <img src="img/piezaAmarilla.png" id="piezaAmarilla" style="display: none;">
+    <img src="img/piezaAzul.png" id="piezaAzul" style="display: none;">
+    <img src="img/piezaLila.png" id="piezaLila" style="display: none;">
+    <img src="img/piezaMorada.png" id="piezaMorada" style="display: none;">
+    <img src="img/piezaNaranja.png" id="piezaNaranja" style="display: none;">
+    <img src="img/piezaRoja.png" id="piezaRoja" style="display: none;">
+    <img src="img/piezaVerde.png" id="piezaVerde" style="display: none;">
+
+    <div class="agrupador">
+        <div id="joc"></div>
+        <canvas id="espai" width="300" height="750"> </canvas>
+        <canvas id="seguent" width="120" height="120"></canvas>
+
+    </div>
+
+</body>
+<script>
+    var Pieza = function (formaYColor, x, y) {
+        this.forma = formaYColor[0];
+        this.color = formaYColor[1];
+        this.x = x;
+        this.y = y;
+    };
+    function GeneraPecaAleatoria() {
+        var peces = [
+            [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "groc"],
+            [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]], "lila"],
+            [[[0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 0, 0]], "verd"],
+            [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]], "roig"],
+            [[[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 0]], "blau"],
+            [[[0, 1, 1, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "taronga"],
+            [[[0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], "morat"]];
+        var numeroAleatori = Math.round(Math.random() * 6);
+        return peces[numeroAleatori];
+    }
+    Pieza.prototype.moureEsquerra = function () {
+        if ((this.x - 1) >= 0) {
+            this.x--;
+            return true;
+        } else {
+            return false;
+        }
+    };
+    Pieza.prototype.moureDreta = function () {
+        if ((this.x + 1) < 8) {
+            this.x++;
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    Pieza.prototype.moureAbaix = function () {
+        if (this.y + 1 < 24) {
+            this.y++;
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    Pieza.prototype.rotarDreta = function () {
+        var formaNova = new Array();
+        for (var i = 0; i < this.forma.length; i++) {
+            formaNova[i] = new Array();
+            for (var j = 0; j < this.forma[i].length; j++) {
+                formaNova[i][j] = this.forma[this.forma[i].length - 1 - j][i];
+            }
+        }
+        this.forma = formaNova;
+    };
+    Pieza.prototype.rotarEsquerra = function () {
+        this.rotarDreta();
+        this.rotarDreta();
+        this.rotarDreta();
+    };
+    Pieza.prototype.pintar = function () {
+        var canvas = document.getElementById("seguent");
+        var ctx = canvas.getContext("2d");
+        var img;
+        for (var i = 0; i < this.forma.length; i++) {
+            for (var j = 0; j < this.forma[i].length; j++) {
+                if (this.forma[i][j] === 1) {
+
+                    switch (this.color) {
+                        case "groc":
+                            img = document.getElementById("piezaAmarilla");
+                            break;
+                        case "blau":
+                            img = document.getElementById("piezaAzul");
+                            break;
+                        case "lila":
+                            img = document.getElementById("piezaLila");
+                            break;
+                        case "morat":
+                            img = document.getElementById("piezaMorada");
+                            break;
+                        case "taronga":
+                            img = document.getElementById("piezaNaranja");
+                            break;
+                        case "roig":
+                            img = document.getElementById("piezaRoja");
+                            break;
+                        case "verd":
+                            img = document.getElementById("piezaVerde");
+                            break;
+                    }
+
+                }else {
+                    img = document.getElementById("empty");
+                }
+                ctx.drawImage(img, j * 30, i * 30, 30, 30);
+            }
+
+        }
+    };
+    Pieza.prototype.getForma = function () {
+        return this.forma;
+    };
+    var Joc = {
+        espai: 0,
+        estat: 0,
+        puntuacio: 0,
+        puntuacioMax: 0,
+        pecaVigent: new Pieza(GeneraPecaAleatoria(), 3, 0),
+        seguentPeca: new Pieza(GeneraPecaAleatoria(), 3, 0),
+        nombreDeVegades: new Array(),
+        interval: 500,
+        nivell: 0,
+        teclat: document.getElementById("all"),
+        inicialitzarJoc: function () {
+            this.espai = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            ];
+            this.nombreDeVegades["i"] = 0;
+            this.nombreDeVegades["j"] = 0;
+            this.nombreDeVegades["l"] = 0;
+            this.nombreDeVegades["o"] = 0;
+            this.nombreDeVegades["s"] = 0;
+            this.nombreDeVegades["t"] = 0;
+            this.nombreDeVegades["z"] = 0;
+            this.nivell = 1;
+
+            var este = this;
+            este.teclat = este.teclat.addEventListener("keydown", este.teclatUsuari);
+
+            setInterval(function () {
+                este.movimiento();
+            }, este.interval);
+        },
+        teclatUsuari: function (e) {
+            var este = Joc;
+            if (e.keyCode === 40) {//abajo
+                if (este.seguentEsParet() === false && este.parar() === false) {
+                    este.pecaVigent.moureAbaix();
+                }
+            } else if (e.keyCode === 38) {//arriba
+                este.pecaVigent.rotarEsquerra();
+            } else if (e.keyCode === 37) {//esquerra
+                este.pecaVigent.moureEsquerra();
+                console.log(este.pecaVigent.moureEsquerra());
+            } else if (e.keyCode === 39) {//dreta
+                este.pecaVigent.moureDreta();
+            }
+        },
+        intervalJoc: function () {
+        },
+        haChocat: function () {
+            for (var i = 0; i < this.espai.length; i++) {
+                for (var j = 0; j < this.espai[i].length; j++) {
+                    if (this.espai[i][j] === "P") {
+                        if (i + 1 <= 24) {
+                            if (this.espai[i + 1][j] === 1) {
+                                return true;
+                            }
+                        }
+                        if (i - 1 >= 0) {
+                            if (this.espai[i - 1][j] === 1) {
+                                return true;
+                            }
+                        }
+                        if (j + 1 <= 9) {
+                            if (this.espai[i][j + 1] === 1) {
+                                return true;
+                            }
+                        }
+                        if (j - 1 >= 0) {
+                            if (this.espai[i][j - 1] === 1) {
+                                return true;
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return false;
+        },
+        parar: function () {
+            for (var i = 0; i < 10; i++) {
+                if (this.espai[24][i] === "P") {
+                    return true;
+                }
+            }
+            return false;
+        }, seguentEsParet: function () {
+            var bool = false;
+            for (var i = 0; i < this.espai.length; i++) {
+                for (var j = 0; j < this.espai[i].length; j++) {
+                    if (this.espai[i][j] === "P") {
+                        if (i + 1 <= 24) {
+                            if (this.espai[i + 1][j] === 1) {
+                                bool = true;
+                            }
+                        }
+                    }
+                }
+            }
+            return bool;
+        },
+        cambiarPieza: function () {
+            this.pecaVigent = this.seguentPeca;
+            this.pecaVigent.x = 3;
+            this.pecaVigent.y = 0;
+            this.seguentPeca = new Pieza(GeneraPecaAleatoria(), 3, 0);
+
+            this.vaciarEspacio(1);
+
+
+        },
+        movimiento: function () {
+            this.vaciarEspacio(0);
+            this.colocarPiezaATauler();
+
+            if (this.parar() === false && this.seguentEsParet() === false) {
+                this.pecaVigent.y++;
             } else {
-                return false;
+                this.cambiarPieza();
             }
-        };
+            this.pinta();
 
-        Pieza.prototype.moureEsquerra = function () {
-            if ((x + 1) < 14) {
-                x++;
-                return true;
-            } else {
-                return false;
-            }
-        };
-
-        Pieza.prototype.moureAbaix = function () {
-            if (y - 1 > 0) {
-                y--;
-                return true;
-            } else {
-                return false;
-            }
-        };
-
-        Pieza.prototype.rotarDreta = function () {
-            var formaNova = new Array();
-            for (var i = 0; i < this.forma.length; i++) {
-                formaNova[i] = new Array();
-                for (var j = 0; j < this.forma[i].length; j++) {
-                    formaNova[i][j] = this.forma[this.forma[i].length - 1 - j][i];
+        },
+        vaciarEspacio: function (parametro) {
+            for (var i = 0; i < this.espai.length; i++) {
+                for (var j = 0; j < this.espai[i].length; j++) {
+                    if (this.espai[i][j] === "P") {
+                        this.espai[i][j] = parametro;
+                    }
                 }
             }
-            this.forma = formaNova;
-        };
-        Pieza.prototype.rotarEsquerra = function () {
-            this.rotarDreta();
-            this.rotarDreta();
-            this.rotarDreta();
-        };
-        Pieza.prototype.pintar = function ()
-        {
-            var resultat = "<table class=seguent>";
-            for (var i = 0; i < this.forma.length; i++)
-            {
-                resultat = resultat + "<tr>";
-                for (var j = 0; j < this.forma[i].length; j++)
-                {
+        },
+        pinta: function () {
+            document.getElementById('joc').innerHTML = "";
+            var canvas = document.getElementById("espai");
+            var ctx = canvas.getContext("2d");
+            var img;
+            var print;
 
-                    if (this.forma[i][j] === 1) {
-                        resultat = resultat + "<td class=pieza>";
-                        resultat = resultat + "1";
-                        resultat = resultat + "</td>";
+            print = "Nivell: " + this.nivell + "<br>";
+            print += ("Puntuació Actual: " + this.puntuacioMax+"<br>");
+            print += ("Puntuació Màxima: " + this.puntuacioMax);
+            document.getElementById('joc').innerHTML = print;
+            
+            this.seguentPeca.pintar();
+
+            for (var i = 0; i < this.espai.length; i++) {
+                for (var j = 0; j < this.espai[i].length; j++) {
+                    if (this.espai[i][j] === "P") {
+
+                        switch (this.pecaVigent.color) {
+                            case "groc":
+                                img = document.getElementById("piezaAmarilla");
+                                break;
+                            case "blau":
+                                img = document.getElementById("piezaAzul");
+                                break;
+                            case "lila":
+                                img = document.getElementById("piezaLila");
+                                break;
+                            case "morat":
+                                img = document.getElementById("piezaMorada");
+                                break;
+                            case "taronga":
+                                img = document.getElementById("piezaNaranja");
+                                break;
+                            case "roig":
+                                img = document.getElementById("piezaRoja");
+                                break;
+                            case "verd":
+                                img = document.getElementById("piezaVerde");
+                                break;
+                        }
+                    } else if (this.espai[i][j] === 1) {
+                        img = document.getElementById("paret");
                     } else {
-                        resultat = resultat + "<td>";
-                        resultat = resultat + "-";
-                        resultat = resultat + "</td>";
+                        img = document.getElementById("empty");
                     }
-
-                }
-                resultat = resultat + "</tr>";
-            }
-            resultat = resultat + "</table>";
-            return resultat;
-        };
-        Pieza.prototype.getForma = function () {
-            return this.forma;
-        };
-        var Joc = {
-            espai: 0,
-            estat: 0,
-            puntuacio: 0,
-            puntuacioMax: 0,
-            pecaVigent: new Pieza(GeneraPecaAleatoria(), 3, 0),
-            seguentPeca: new Pieza(GeneraPecaAleatoria(), 3, 0),
-            nombreDeVegades: new Array(),
-            interval: 0,
-            nivell: 0,
-            teclat: document.getElementById("all"),
-            inicialitzarJoc: function () {
-                this.espai = [
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                ];
-                this.nombreDeVegades["i"] = 0;
-                this.nombreDeVegades["j"] = 0;
-                this.nombreDeVegades["l"] = 0;
-                this.nombreDeVegades["o"] = 0;
-                this.nombreDeVegades["s"] = 0;
-                this.nombreDeVegades["t"] = 0;
-                this.nombreDeVegades["z"] = 0;
-                this.nivell = 1;
-
-                this.teclat = this.teclat.addEventListener("keydown", this.teclatUsuari);
-
-
-
-                var este = this;
-
-                setInterval(function () {
-                    este.movimiento();
-                }, 100);
-
-            },
-
-            teclatUsuari: function (e) {
-                //todo input 
-                if (e.keyCode === 40) {//abajo
-                    this.pecaVigent.moureAbaix();
-                } else if (e.keyCode === 38) {//arriba
-
-                } else if (e.keyCode === 37) {//esquerra
-                    console.log(this.pecaVigent.x);
-                } else if (e.keyCode === 39) {//dreta
-                }
-            },
-            intervalJoc: function () {
-            },
-            haChocat: function () {
-                //todo
-                for (var i = 0; i < this.espai.length; i++) {
-                    for (var j = 0; j < this.espai[i].length; j++) {
-                        if (this.espai[i][j] === "P") {
-                            try {
-                                if (this.espai[i + 1][j] === 1) {
-                                    return true;
-                                }
-                            } catch (e) {
-                                console.log(e);
-                            }
-                            try {
-                                if (this.espai[i - 1][j] === 1) {
-                                    return true;
-                                }
-                            } catch (e) {
-                                console.log(e);
-                            }
-                            try {
-                                if (this.espai[i][j + 1] === 1) {
-                                    return true;
-                                }
-                            } catch (e) {
-                                console.log(e);
-                            }
-                            try {
-                                if (this.espai[i][j - 1] === 1) {
-                                    return true;
-                                }
-                            } catch (e) {
-                                console.log(e);
-                            }
-                        }
-                    }
-                }
-
-                return false;
-            },
-            parar: function () {
-                if (this.pecaVigent.color === "lila") { //si es el palo 
-                    if (this.pecaVigent.y < 21) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                } else if (this.pecaVigent.color === "taronga" || this.pecaVigent.color === "blau") {
-                    console.log("a")
-                    if (this.pecaVigent.y < 22) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                } else {
-                    if (this.pecaVigent.y < 23) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
-            }, seguentEsParet: function () {
-                var bool = false;
-                for (var i = 0; i < this.espai.length; i++) {
-                    for (var j = 0; j < this.espai[i].length; j++) {
-                        if (this.espai[i][j] === "P") {
-                            if (i + 1 <= 24) {
-                                if (this.espai[i + 1][j] === 1) {
-                                    bool = true;
-                                }
-                            }
-                        }
-                    }
-                }
-                return bool;
-            },
-            cambiarPieza: function () {
-                this.pecaVigent = this.seguentPeca;
-                this.pecaVigent.x = 3;
-                this.pecaVigent.y = 0;
-                this.seguentPeca = new Pieza(GeneraPecaAleatoria(), 3, 0);
-
-                this.vaciarEspacio(1);
-
-
-            },
-            movimiento: function () {
-
-
-                this.vaciarEspacio(0);
-                this.colocarPiezaATauler();
-                if (this.parar() === false && this.seguentEsParet() === false) {
-                    this.pecaVigent.y++;
-                } else {
-                    this.cambiarPieza();
-                }
-                this.pinta();
-
-            },
-            vaciarEspacio: function (parametro) {
-                for (var i = 0; i < this.espai.length; i++) {
-                    for (var j = 0; j < this.espai[i].length; j++) {
-                        if (this.espai[i][j] === "P") {
-                            this.espai[i][j] = parametro;
-                        }
-                    }
-                }
-            },
-            pinta: function () {
-                document.getElementById('joc').innerHTML = "";
-                var print;
-
-                print = "Nivell: " + this.nivell + "<br>";
-                print += ("Puntuació Màxima: " + this.puntuacioMax);
-                print += ("<br>Puntuació Actual: " + this.puntuacio + "<br><br>Peça següent");
-                print += (this.seguentPeca.pintar() + "<br>");
-
-
-                print += "<table>";
-                for (var i = 0; i < this.espai.length; i++) {
-                    print += "<tr>";
-                    for (var j = 0; j < this.espai[i].length; j++) {
-                        if (this.espai[i][j] === "P") {
-                            print += "<td class='pieza'>" + "</td>";
-                        } else if (this.espai[i][j] === 1) {
-                            print += "<td class='pared'>" + "</td>";
-                        } else {
-                            print += "<td>" + "</td>";
-                        }
-                    }
-                    print += ("</tr>");
-                }
-                print += "</table>";
-
-                document.getElementById('joc').innerHTML = print;
-
-            },
-            colocarPiezaATauler: function () {
-                var top = 0;
-                var trobat = false;
-                for (var i = 0; i < this.pecaVigent.forma.length; i++) {
-                    for (var j = 0; j < this.pecaVigent.forma[i].length; j++) {
-                        if (this.pecaVigent.forma[i][j] === 1) {
-                            this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] = "P";
-                            trobat = true;
-                        }
-                    }
-                    if (trobat === true) {
-                        top++;
-                    }
+                    ctx.drawImage(img, j * 30, i * 30, 30, 30);
                 }
             }
-        };
-        Joc.inicialitzarJoc();
-    </script>
+        },
+        colocarPiezaATauler: function () {
+            var top = 0;
+            var trobat = false;
+            for (var i = 0; i < this.pecaVigent.forma.length; i++) {
+                for (var j = 0; j < this.pecaVigent.forma[i].length; j++) {
+                    if (this.pecaVigent.forma[i][j] === 1) {
+                        this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] = "P";
+                        trobat = true;
+                    }
+                }
+                if (trobat === true) {
+                    top++;
+                }
+            }
+        }
+    };
+    Joc.inicialitzarJoc();
+</script>
+
 </html>
