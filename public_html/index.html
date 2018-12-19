@@ -127,19 +127,6 @@ and open the template in the editor.
             Pieza.prototype.getForma = function () {
                 return this.forma;
             };
-            Pieza.prototype.mirarUltimaFilaForma = function () {
-                for (var i = 0; i < 4; i++) {
-                    if (this.forma[3][i] == 1) {
-                        return 3;
-                    }
-                }
-                for (var i = 0; i < 4; i++) {
-                    if (this.forma[2][i] == 1) {
-                        return 2;
-                    }
-                }
-                return 1;
-            };
             Pieza.prototype.mirarLimiteIzquierdo = function () {
                 for (var i = 0; i < 4; i++) {
                     if (this.forma[i][0] === 1) {
@@ -175,7 +162,7 @@ and open the template in the editor.
                 pecaVigent: new Pieza(GeneraPecaAleatoria(), 3, 0),
                 seguentPeca: new Pieza(GeneraPecaAleatoria(), 3, 0),
                 nombreDeVegades: new Array(),
-                interval: 500,
+                interval: 300,
                 nivell: 0,
                 teclat: document.getElementById("all"),
                 inicialitzarJoc: function () {
@@ -214,6 +201,7 @@ and open the template in the editor.
                     this.nombreDeVegades["t"] = 0;
                     this.nombreDeVegades["z"] = 0;
                     this.nivell = 1;
+                    this.puntuacio = 0;
 
                     var este = this;
                     este.teclat = este.teclat.addEventListener(
@@ -229,7 +217,8 @@ and open the template in the editor.
                     var este = Joc;
                     if (e.keyCode === 40) {
                         //abajo
-                        este.pecaVigent.moureAbaix();
+                        este.puntuacio++;
+                        este.movimiento();
                     } else if (e.keyCode === 38) {
                         //arriba
                         este.pecaVigent.rotarEsquerra();
@@ -293,12 +282,41 @@ and open the template in the editor.
 
                     this.vaciarEspacio(1);
                 },
+                esborraTauler: function () {
+                    var cont = 0;
+                    var esborrar = false;
+                    var fila;
+                    for (var i = 0; i < this.espai.length; i++) {
+                        for (var j = 0; j < this.espai[i].length; j++) {
+                            if (this.espai[i][j] === 1) {
+                                cont++;
+                            }
+                        }
+                        if (cont !== 10) {
+                            cont = 0;
+
+                        } else {
+                            esborrar = true;
+                            fila = i;
+                        }
+                    }
+                    if (esborrar) {
+                        for (var i = fila; i >= 0; i--) {
+                            if (i == 0) {
+                                this.espai[0] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                            } else {
+                                this.espai[i] = this.espai[i - 1];
+                            }
+                        }
+                    }
+                },
                 movimiento: function () {
 
                     try {
                         if (this.colocarPiezaATauler() === false) {
                             throw e;
                         }
+                        this.esborraTauler();
                     } catch (e) {
                         this.vaciarEspacio(0);
                         this.pecaVigent.y--;
@@ -327,7 +345,7 @@ and open the template in the editor.
                     var print;
 
                     print = "Nivell: " + this.nivell + "<br>";
-                    print += "Puntuació Actual: " + this.puntuacioMax + "<br>";
+                    print += "Puntuació Actual: " + this.puntuacio + "<br>";
                     print += "Puntuació Màxima: " + this.puntuacioMax;
                     document.getElementById("joc").innerHTML = print;
 
@@ -375,15 +393,18 @@ and open the template in the editor.
                     for (var i = 0; i < this.pecaVigent.forma.length; i++) {
                         for (var j = 0; j < this.pecaVigent.forma[i].length; j++) {
                             if (this.pecaVigent.forma[i][j] === 1) {
-                                console.log("error: " + parseInt(this.pecaVigent.y + top));
                                 if (this.pecaVigent.y + top < 25 || this.pecaVigent.x + j >= 0) {
-                                    if (this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] !==0) {
+                                    try {
+                                        if (this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] !== 0) {
+                                            return false;
+                                        }
+                                    } catch (e) {
                                         return false;
                                     }
                                     if (this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] == 1) {
                                         return false;
                                     } else {
-                                        this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] ="P";
+                                        this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] = "P";
                                         trobat = true;
                                     }
                                 } else {
