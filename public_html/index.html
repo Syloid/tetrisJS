@@ -83,9 +83,14 @@ and open the template in the editor.
                 this.forma = formaNova;
             };
             Pieza.prototype.rotarEsquerra = function () {
-                this.rotarDreta();
-                this.rotarDreta();
-                this.rotarDreta();
+                var formaNova = new Array();
+                for (var i = this.forma.length-1; i >=0; i--) {
+                    formaNova[i] = new Array();
+                    for (var j = this.forma[i].length-1; j >=0; j--) {
+                        formaNova[i][j] = this.forma[j][this.forma[i].length - 1 - i];
+                    }
+                }
+                this.forma = formaNova;
             };
             Pieza.prototype.pintar = function () {
                 var canvas = document.getElementById("seguent");
@@ -162,9 +167,9 @@ and open the template in the editor.
                 pecaVigent: new Pieza(GeneraPecaAleatoria(), 3, 0),
                 seguentPeca: new Pieza(GeneraPecaAleatoria(), 3, 0),
                 nombreDeVegades: new Array(),
-                interval: 300,
+                interval: 1000,
                 nivell: 0,
-                teclat: document.getElementById("all"),
+                teclat: null,
                 inicialitzarJoc: function () {
                     this.espai = [
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -200,16 +205,23 @@ and open the template in the editor.
                     this.nombreDeVegades["s"] = 0;
                     this.nombreDeVegades["t"] = 0;
                     this.nombreDeVegades["z"] = 0;
+                    this.teclat = document.getElementById("all");
                     this.nivell = 1;
                     this.puntuacio = 0;
 
-                    var este = this;
+                    if(document.cookie.indexOf('puntuacioMax=')<0) {
+                        document.cookie = "puntuacioMax="+parseInt(0);
+                    }else {
+                        var valorDeLaCookie = parseInt(document.cookie.substring(document.cookie.indexOf("=")+1));
+                        this.puntuacioMax=valorDeLaCookie;
+                    }
+                    var este = Joc;
                     este.teclat = este.teclat.addEventListener(
                             "keydown",
                             este.teclatUsuari
                             );
 
-                    setInterval(function () {
+                    interval = setInterval(function () {
                         este.movimiento();
                     }, este.interval);
                 },
@@ -221,60 +233,76 @@ and open the template in the editor.
                         este.movimiento();
                     } else if (e.keyCode === 38) {
                         //arriba
-                        este.pecaVigent.rotarEsquerra();
+                        este.movimentHoritzontal("this.pecaVigent.rotarDreta();","this.pecaVigent.rotarEsquerra();");
                     } else if (e.keyCode === 37) {
                         //esquerra
-                        if (este.pecaVigent.mirarLimiteIzquierdo() + este.pecaVigent.x > 0) {
-                            este.pecaVigent.moureEsquerra();
-                        }
-
+                        este.movimentHoritzontal("this.pecaVigent.x--;","this.pecaVigent.x++;");
                     } else if (e.keyCode === 39) {
                         //dreta 
-                        console.log(este.pecaVigent.x + este.pecaVigent.mirarLimiteDerecho());
-                        if (este.pecaVigent.mirarLimiteDerecho() + este.pecaVigent.x < 9) {
-                            este.pecaVigent.moureDreta();
-                        }
-
+                            este.movimentHoritzontal("this.pecaVigent.x++;","this.pecaVigent.x--;");
+                    }else if(e.keyCode ===32) {
+                        //espacio
+                        este.movimentHoritzontal("this.pecaVigent.rotarEsquerra();","this.pecaVigent.rotarDreta();");
                     }
                 },
-                seHaSalido: function () {
+                sumaVeguades: function() {
                     var cont = 0;
-                    for (var i = 0; i < this.espai.length; i++) {
-                        for (var j = 0; j < this.espai[i].length; j++) {
-                            if (this.espai[i][j]) {
-                                cont++;
-                            }
-                        }
+                    for (var peca in this.nombreDeVegades) {
+                        cont += this.nombreDeVegades[peca];
                     }
                     return cont;
                 },
-                haColapsat: function () {
-                    var bool = false;
-                    for (var i = 0; i < this.espai.length; i++) {
-                        for (var j = 0; j < this.espai[i].length; j++) {
-                            if (this.espai[i][j] === "P") {
-                                if (this.espaiBackUp[i][j] === 1) {
-                                    bool = true;
-                                }
-                            }
+                intervalJoc: function () {
+                    this.nivell++;
+                    this.puntuacio+=20;
+                    clearInterval(interval);
+                                this.interval*=0.9;
+                                interval = setInterval(function () {
+                        Joc.movimiento();
+                    }, Joc.interval);
+
+                },
+                hasPerdut:function(){
+                    var filaAbaix=false;
+                    var filaAmunt = false;
+                    for(var i = 0; i<10; i++) {
+                        if(this.espai[0][i]!==0 && this.espai[0][i]!="P") {
+                            filaAmunt=true;
+                        }
+                        if(this.espai[24][i]!==0 && this.espai[24][i]!="P") {
+                            filaAbaix=true;
                         }
                     }
-                    return bool;
-                },
-                intervalJoc: function () {},
-                posicionSiguienteHayPieza: function () {
-                    for (var i = 0; i < this.pecaVigent.forma.length; i++) {
-                        for (var j = 0; j < this.pecaVigent.forma[i].length; j++) {
-                            if (
-                                    this.espai[this.pecaVigent.y + i][this.pecaVigent.x + j] === 1
-                                    ) {
-                                return true;
-                            }
+
+                    if(filaAbaix && filaAmunt) {
+                        alert("Has perdut :c");
+                        var valorDeLaCookie = parseInt(document.cookie.substring(document.cookie.indexOf("=")+1));
+                        if(valorDeLaCookie<this.puntuacio) {
+                            document.cookie = "puntuacioMax="+parseInt(this.puntuacio);                            
+
                         }
-                        return false;
+                        clearInterval(interval);
+                        
+                        Joc.inicialitzarJoc();
                     }
                 },
                 cambiarPieza: function () {
+                    switch (this.pecaVigent.color) {
+                        case "groc":this.nombreDeVegades["o"]++;
+                            break;
+                        case "blau":this.nombreDeVegades["j"]++;
+                            break;
+                        case "lila":this.nombreDeVegades["i"]++;
+                            break;
+                        case "morat":this.nombreDeVegades["t"]++;
+                            break;
+                        case "taronga":this.nombreDeVegades["l"]++;
+                            break;
+                        case "roig":this.nombreDeVegades["z"]++;
+                            break;
+                        case "verd":this.nombreDeVegades["s"]++;
+                            break;
+                    }
                     this.pecaVigent = this.seguentPeca;
                     this.pecaVigent.x = 3;
                     this.pecaVigent.y = 0;
@@ -311,21 +339,35 @@ and open the template in the editor.
                     }
                 },
                 movimiento: function () {
-
-                    try {
-                        if (this.colocarPiezaATauler() === false) {
-                            throw e;
-                        }
-                        this.esborraTauler();
-                    } catch (e) {
-                        this.vaciarEspacio(0);
-                        this.pecaVigent.y--;
-                        this.colocarPiezaATauler();
-                        error = true;
-                        this.cambiarPieza();
-                        this.pinta();
-                    }
+                    this.esborraTauler();
+                    this.hasPerdut();
                     this.pecaVigent.y++;
+                        if (this.colocarPiezaATauler() === false) {
+                            this.vaciarEspacio(0);
+                            this.pecaVigent.y--;
+                            this.colocarPiezaATauler();
+                            this.cambiarPieza();
+                            this.pinta();
+                            this.vaciarEspacio(0);
+                            this.puntuacio+=10;
+                            if(this.sumaVeguades()%10==0) {
+                                this.intervalJoc();
+                            }
+                        }
+                    this.pinta();
+                    this.vaciarEspacio(0);
+
+                },
+                movimentHoritzontal:function(movimientoVerdadero, movimientoFalso){
+                    this.esborraTauler();
+                    eval(movimientoVerdadero);
+                    if(this.colocarPiezaATauler() ==false) {
+                            this.vaciarEspacio(0);
+                            eval(movimientoFalso);
+                            this.colocarPiezaATauler();
+                            this.pinta();
+
+                    }
                     this.pinta();
                     this.vaciarEspacio(0);
                 },
@@ -392,21 +434,16 @@ and open the template in the editor.
                     var trobat = false;
                     for (var i = 0; i < this.pecaVigent.forma.length; i++) {
                         for (var j = 0; j < this.pecaVigent.forma[i].length; j++) {
-                            if (this.pecaVigent.forma[i][j] === 1) {
-                                if (this.pecaVigent.y + top < 25 || this.pecaVigent.x + j >= 0) {
-                                    try {
-                                        if (this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] !== 0) {
+                            if (this.pecaVigent.forma[i][j] === 1) { //si es una peça
+                                if ((this.pecaVigent.y + top < 25) && (this.pecaVigent.x + j >= 0) && (this.pecaVigent.x + j <10)) {
+
+                                        if (this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] != 0) {
+                                            
                                             return false;
                                         }
-                                    } catch (e) {
-                                        return false;
-                                    }
-                                    if (this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] == 1) {
-                                        return false;
-                                    } else {
                                         this.espai[this.pecaVigent.y + top][this.pecaVigent.x + j] = "P";
                                         trobat = true;
-                                    }
+                                    
                                 } else {
                                     return false;
                                 }
